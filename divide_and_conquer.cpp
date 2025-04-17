@@ -64,3 +64,22 @@ double recursiveAlgorithm(std::vector<std::pair<int, int>> points, int start, in
 
 
 }
+
+int main(){
+    int n, x, y; 
+    double minDistance;
+    std::cout << "Bienvenido al calculador de la distancia Euclidiana mínima.\n" << std::endl;
+    std::cout << "Ingrese la cantidad de puntos a evaluar: ";
+    std::cin >> n;
+    std::vector<std::pair<int, int>> points(n);
+    std::cout << "Ingrese los " << n << " puntos en el siguiente formato 'x y':" << std::endl;
+    for (int i=0 ; i<n ; i++){
+        std::cin >> x >> y;
+        points[i] = std::pair<int, int>(x, y);
+        std::cout << "(" << points[i].first << ", " << points[i].second << ")" << std::endl;
+    }
+
+    minDistance = minEuclidianDistance(points);
+    std::cout << "La distancia Euclidiana minima entre el conjunto de puntos dado es " << minDistance << std::endl;
+    return 0;
+}
