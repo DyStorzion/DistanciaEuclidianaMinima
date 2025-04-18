@@ -18,6 +18,7 @@ double calculateMinimumDistance(std::vector<std::pair<int, int>> puntos){
     return distancia_minima; 
 }
 
+/*
 int main() {
     int n;
     std::cout << "Cuantos puntos desea ingresar: \n";
@@ -36,4 +37,4 @@ int main() {
     double distancia = calculateMinimumDistance(puntos);
     std::cout << "La distancia minima entre los puntos es: " << distancia << std::endl;
     return 0;
-}
+} */
