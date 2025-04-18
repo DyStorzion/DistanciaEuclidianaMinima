@@ -1,31 +1,31 @@
 #include <iostream>
 #include <cmath>
-#include <vector>
 #include <algorithm>
-#include "brute_force.cpp"
+#include <vector>
 
-double distanciaEuclidiana(std::pair<int, int> p1, std::pair<int, int> p2) {    
+double euclidianDistance(std::pair<int, int> p1, std::pair<int, int> p2) {   
     return sqrt(pow(p2.first - p1.first, 2) + pow(p2.second - p1.second, 2));
 }
 
-double minEuclidianDistance(std::vector<std::pair<int, int>> points){
-    //ordenar vector segun el eje x
+double calculateMinimumDistance(std::vector<std::pair<int, int>> points, int start, int end){
+    double minDistance = INT_MAX;
+    for(int i = start; i < end; i++){
+        for(int j = i + 1; j <= end; j++){
+            double distance = euclidianDistance(points[i], points[j]);
+            minDistance = std::min(minDistance, distance);
+        }
+    }
+    return minDistance;
+}     
 
-    std::sort(points.begin(), points.end(), [](const std::pair<int, int>& a, const std::pair<int, int>& b){
-        return a.first < b.first;
-    });
-
-    return recursiveAlgorithm(points, 0, points.size()-1);       
-}           
-
-double recursiveAlgorithm(std::vector<std::pair<int, int>> points, int start, int end){
+double recursiveAlgorithm(std::vector<std::pair<int, int>>& points, int start, int end){
     if (end - start + 1 <= 3){
-        return calcular_distancia_minima(points);
+        return calculateMinimumDistance(points, start, end);
     }
 
     // Obtiene la distancia euclidiana minima de los grupos obtenidos al dividir por la mitad
     // el conjunto de puntos actual
-    int mid = (end - start)/2;
+    int mid = start + (end - start)/2;
     double minDistanceFR = recursiveAlgorithm(points, start, mid);
     double minDistanceSR = recursiveAlgorithm(points, mid+1, end);
     double minDistance = minDistanceFR;
@@ -50,10 +50,11 @@ double recursiveAlgorithm(std::vector<std::pair<int, int>> points, int start, in
     int size = pointsNearMid.size();
     for (int i=0 ; i<size-1 ; i++){
         for (int j=i+1 ; j<size ; j++){
-            double distanceBetweenPoints = abs(pointsNearMid[i].second - pointsNearMid[j].second);
-            if (distanceBetweenPoints >= minDistance){
+            double YDistance = abs(pointsNearMid[i].second - pointsNearMid[j].second);
+            if (YDistance >= minDistance){
                 break;
             }
+            double distanceBetweenPoints = euclidianDistance(pointsNearMid[i], pointsNearMid[j]);
             if (distanceBetweenPoints < minDistance){
                 minDistance = distanceBetweenPoints;
             }
@@ -65,10 +66,19 @@ double recursiveAlgorithm(std::vector<std::pair<int, int>> points, int start, in
 
 }
 
+double minEuclidianDistance(std::vector<std::pair<int, int>>& points){
+    //ordenar vector segun el eje x
+    std::sort(points.begin(), points.end(), [](const std::pair<int, int>& a, const std::pair<int, int>& b){
+        return a.first < b.first;
+    });
+
+    return recursiveAlgorithm(points, 0, points.size()-1);       
+}   
+
 int main(){
     int n, x, y; 
     double minDistance;
-    std::cout << "Bienvenido al calculador de la distancia Euclidiana mínima.\n" << std::endl;
+    std::cout << "Bienvenido al calculador de la distancia Euclidiana minima.\n" << std::endl;
     std::cout << "Ingrese la cantidad de puntos a evaluar: ";
     std::cin >> n;
     std::vector<std::pair<int, int>> points(n);
@@ -76,7 +86,6 @@ int main(){
     for (int i=0 ; i<n ; i++){
         std::cin >> x >> y;
         points[i] = std::pair<int, int>(x, y);
-        std::cout << "(" << points[i].first << ", " << points[i].second << ")" << std::endl;
     }
 
     minDistance = minEuclidianDistance(points);
