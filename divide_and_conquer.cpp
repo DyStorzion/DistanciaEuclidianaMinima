@@ -18,24 +18,40 @@ double calculateMinimumDistance(std::vector<std::pair<int, int>> points, int sta
     return minDistance;
 }     
 
-double recursiveAlgorithm(std::vector<std::pair<int, int>>& points, int start, int end){
+std::pair<std::vector<std::pair<int, int>>, double> recursiveAlgorithm(std::vector<std::pair<int, int>>& points, int start, int end){
+
+    // Si hay 3 o menos elementos se genera un vector ordenado en base a la coordenada y; se retorna el arreglo y la distancia minima entre los puntos.
     if (end - start + 1 <= 3){
-        return calculateMinimumDistance(points, start, end);
+        std::vector<std::pair<int, int>> ySortedPoints;
+        for (int i=start ; i<=end ; i++){
+            ySortedPoints.push_back(points[i]);
+        }
+        std::sort(ySortedPoints.begin(), ySortedPoints.end(), [](const std::pair<int, int>& a, const std::pair<int, int>& b){
+            return a.second < b.second;
+        });
+        return std::pair<std::vector<std::pair<int, int>>, double>(ySortedPoints, calculateMinimumDistance(points, start, end));
     }
 
     // Obtiene la distancia euclidiana minima de los grupos obtenidos al dividir por la mitad
     // el conjunto de puntos actual
+    std::pair<std::vector<std::pair<int, int>>, double> leftVectorAndResult;
+    std::pair<std::vector<std::pair<int, int>>, double> rightVectorAndResult;
     int mid = start + (end - start)/2;
-    double minDistanceFR = recursiveAlgorithm(points, start, mid);
-    double minDistanceSR = recursiveAlgorithm(points, mid+1, end);
-    double minDistance = minDistanceFR;
-    if (minDistanceFR > minDistanceSR) minDistance = minDistanceSR;
+    leftVectorAndResult = recursiveAlgorithm(points, start, mid);
+    rightVectorAndResult = recursiveAlgorithm(points, mid+1, end);
+    double minDistance = leftVectorAndResult.second;
+    if (leftVectorAndResult.second > rightVectorAndResult.second) minDistance = rightVectorAndResult.second;
+
+    //Combina los vectores ordenados en base a la coordenada y
+    int size = leftVectorAndResult.first.size()+rightVectorAndResult.first.size();
+    std::vector<std::pair<int, int>> ySortedPoints(size);
+    std::merge(leftVectorAndResult.first.begin(), leftVectorAndResult.first.end(), rightVectorAndResult.first.begin(), rightVectorAndResult.first.end(), ySortedPoints.begin());
 
     // Guarda los puntos que estan a una distancia, en el eje x, menor a la distancia
     // euclidiana minima de los 2 grupos actuales respecto al punto de al medio.
     std::vector<std::pair<int, int>> pointsNearMid;
-    for (int i=start ; i <= end ; i++){
-        if (abs(points[i].first - points[mid].first) < minDistance){
+    for (int i=0 ; i < size ; i++){
+        if (abs(ySortedPoints[i].first - points[mid].first) < minDistance){
             pointsNearMid.push_back(points[i]);
         }
     }
@@ -47,7 +63,7 @@ double recursiveAlgorithm(std::vector<std::pair<int, int>>& points, int start, i
 
     // Verifica si los pares de puntos cercanos al punto mediano, segun el eje x, generan una distancia
     // euclidiana menor a la minima de ambos grupos
-    int size = pointsNearMid.size();
+    size = pointsNearMid.size();
     for (int i=0 ; i<size-1 ; i++){
         for (int j=i+1 ; j<size ; j++){
             double YDistance = abs(pointsNearMid[i].second - pointsNearMid[j].second);
@@ -61,9 +77,8 @@ double recursiveAlgorithm(std::vector<std::pair<int, int>>& points, int start, i
         }
     }
 
-    return minDistance;
-
-
+    std::pair<std::vector<std::pair<int, int>>, double> result(ySortedPoints, minDistance);
+    return result;
 }
 
 double minEuclidianDistance(std::vector<std::pair<int, int>>& points){
@@ -72,7 +87,7 @@ double minEuclidianDistance(std::vector<std::pair<int, int>>& points){
         return a.first < b.first;
     });
 
-    return recursiveAlgorithm(points, 0, points.size()-1);       
+    return recursiveAlgorithm(points, 0, points.size()-1).second;       
 }   
 
 int main(){
