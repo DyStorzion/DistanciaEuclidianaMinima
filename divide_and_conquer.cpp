@@ -90,6 +90,7 @@ double minEuclidianDistance(std::vector<std::pair<int, int>>& points){
     return recursiveAlgorithm(points, 0, points.size()-1).second;       
 }   
 
+/*
 int main(){
     int n, x, y; 
     double minDistance;
@@ -106,4 +107,4 @@ int main(){
     minDistance = minEuclidianDistance(points);
     std::cout << "La distancia Euclidiana minima entre el conjunto de puntos dado es " << minDistance << std::endl;
     return 0;
-}
+} */
